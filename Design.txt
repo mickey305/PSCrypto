@@ -1,0 +1,174 @@
+﻿■ ビット配列にした時のレイアウト
+・Ver.1
+[RSA(SHA256)署名(128)][ファイル名サイズ(1)][ファイル名(可変長)][鍵数(1)][セッション鍵の公開鍵暗号(128x鍵数)][IV(16)][暗号文(AES256暗号)]
+
+・Ver.2 以降
+[RSA(SHA256)署名(128)][バージョン番号(2)][ファイル名サイズ(1)][ファイル名(可変長)][鍵数(1)][セッション鍵の公開鍵暗号(128x鍵数)][IV(16)][暗号文(AES256暗号)]
+
+
+■アルゴリズム
+● 暗号
+平文ファイルを読む
+ファイル名記録
+ファイル名長記録
+256 bit のセッション鍵生成
+セッション鍵を使い平文を AES256 で暗号化しIV+暗号文にする
+セッション鍵を RSA 公開鍵で暗号化(配布先分)
+鍵数を記録
+データー連結
+秘密鍵で連結したデーターの署名を作る
+署名を連結
+暗号化データ出力
+
+● 復号
+暗号化データを読む
+暗号化データを署名と署名以外/各パートに分解
+公開鍵で署名以外の署名確認
+セッション鍵を秘密鍵で復号
+暗号文をセッション鍵とIVでAES256復号化
+ファイル名で平文ファイル出力
+
+● 鍵作成
+公開鍵と秘密鍵作る
+公開鍵ファイル出力
+
+● Export
+パスワードを SHA256 でハッシュ
+CSP キーコンテナ Export
+ハッシュ値でCSP キーコンテナをAES256暗号化
+ファイル出力
+
+● Test
+ファイル読む
+パスワードを SHA256 でハッシュ
+ハッシュ値で暗号文を AES256 復号
+
+● Import
+ファイル読む
+パスワードを SHA256 でハッシュ
+ハッシュ値で暗号文を AES256 復号
+CSP キーコンテナ Import
+
+● Remove
+CSP キーコンテナ 削除
+
+● 環境確認
+PowerShell バージョン確認
+.NET Framework バージョン確認
+
+
+■ 必要環境
+RNG
+	System.Security.Cryptography.RNGCryptoServiceProvider
+	.NET Framework 1.1-
+		Dispose()
+		.NET Framework 4.0-
+
+AES
+	System.Security.Cryptography.AesCryptoServiceProvider
+	.NET Framework 3.5-
+		Dispose()
+		.NET Framework 4.0-
+
+RSA
+	System.Security.Cryptography.CspParameters
+	.NET Framework 1.1-
+	System.Security.Cryptography.RSACryptoServiceProvider
+	.NET Framework 1.1-
+		Dispose()
+		.NET Framework 4.0-
+	System.Security.Cryptography.RSAPKCS1SignatureFormatter
+	.NET Framework 1.1-
+
+SHA
+	System.Security.Cryptography.SHA256CryptoServiceProvider
+	.NET Framework 3.5-
+		Dispose()
+		.NET Framework 4.0-
+
+ValidateSet
+	PS : 3.0-
+
+■ OS 状態
+Windows 10 TH2
+	Full
+		PS:
+			5.0
+		.NET:
+			4.6.1
+	Init
+		PS:
+			5.0
+		.NET:
+			4.6.1
+
+Windows 8.1u1
+	Full WU
+		PS:
+			4.0
+		.NET:
+			4.5.2
+	Init
+		PS:
+			4.0
+		.NET:
+			4.5.1
+
+Windows 8
+	Full WU
+		PS:
+			4.0
+		.NET:
+			4.5.2
+	Init
+		PS:
+			3
+		.NET:
+			4.5
+
+Windows 7 SP1
+	Full WU
+		PS:
+			2.0
+		.NET:
+			2.0
+			3.0
+			3.5
+			4.6.1
+	Mini
+		PS:
+			2.0
+		.NET:
+			2.0
+			3.0
+			3.5
+	Init
+		PS:
+			2.0
+		.NET:
+			2.0
+			3.0
+			3.5
+
+■ Management Framework
+	(.NET Framework 4.5 or above)
+	Download Windows Management Framework 4.0 from Official Microsoft Download Center
+	https://www.microsoft.com/ja-jp/download/details.aspx?id=40855
+
+	Download Windows Management Framework 5.0 from Official Microsoft Download Center
+	https://www.microsoft.com/en-us/download/details.aspx?id=50395
+
+	(.NET Framework 4.0 or above)
+	Download Windows Management Framework 3.0 from Official Microsoft Download Center
+	https://www.microsoft.com/en-us/download/details.aspx?id=34595
+
+
+■ .NET Framework
+	.NET Framework 4.5.2
+	https://www.microsoft.com/ja-JP/download/details.aspx?id=42643
+
+	.NET Framework 4.6
+	https://www.microsoft.com/ja-jp/download/details.aspx?id=48130
+
+	.NET Framework 4.6.1
+	https://www.microsoft.com/ja-jp/download/details.aspx?id=49981
