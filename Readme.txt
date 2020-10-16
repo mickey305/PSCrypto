@@ -83,6 +83,30 @@ PowerShell Core 7 以降(Mac、Linux、Windows)
 
 引数なしでスクリプトを実行するとヘルプが表示されます
 
+■ パラメーターの省略
+暗号/復号の時は -Mode 指定と、-Path、 -PublicKeys のオプション名指定を省略できます(Mode はファイルの拡張子で判断)
+
+	暗号
+		PS > .\PSCrypto.ps1 暗号化するファイル 受信者の公開鍵
+
+	復号
+		PS > .\PSCrypto.ps1 復号化するファイル [送信者の公開鍵]
+		(送信者の公開鍵を省略すると、署名チェックをしません)
+
+■ 公開鍵の省略形
+公開鍵をデフォルトフォルダ(スクリプトフォルダ\PSScript_PublicKeys)に格納している場合は、公開鍵のフォルダ名(PSScript_PublicKeys)、拡張子(.xml)、サフィックス(_PublicKey)が省略可能です
+
+	PSScript_PublicKeys\userA_PublicKey.xml → userA
+
+	省略形を使わずに公開鍵を指定する場合
+		PS >.\PSCrypto.ps1 暗号化するファイル .\PSScript_PublicKeys\userA_PublicKey.xml
+
+	公開鍵を省略形で指定する場合
+		PS >.\PSCrypto.ps1 暗号化するファイル userA
+
+		複数相手に対して暗号化する場合は、-PublicKeys オプションを明示的に指定し、公開鍵をカンマで区切って下さい
+
+			PS > .\PSCrypto.ps1 暗号化するファイル -PublicKeys UserA, UserB
 
 ■ インストール方法
 任意のフォルダーに PSCrypto.ps1 をコピーします
