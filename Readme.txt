@@ -116,6 +116,8 @@ http://www.vwnet.jp/Windows/PowerShell/PublicKeyCrypto.htm
 
 ■ ディレクトリ構造
 スクリプトは以下ディレクトリ構造を使用します
+ただし、環境変数「PSC_KEYSTORE_PATH」に任意のパスが指定されている場合、
+環境変数のパスをスクリプトディレクトリ（スクリプトフォルダー）として使用します
 (サブディレクトリは自動作成)
 
 スクリプト
