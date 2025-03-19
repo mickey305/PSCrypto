@@ -255,6 +255,10 @@ $C_ScriptFullFileName = $MyInvocation.MyCommand.Path
 # スクリプトフォルダ
 $C_ScriptDirectory = $PSScriptRoot
 if ( $null -ne $env:PSC_KEYSTORE_PATH ) {
+	if ( -not (Test-Path $env:PSC_KEYSTORE_PATH )) {
+		Write-Output "env:PSC_KEYSTORE_PATH not found.: $env:PSC_KEYSTORE_PATH"
+		exit
+	}
 	$C_ScriptDirectory = $env:PSC_KEYSTORE_PATH
 }
 
