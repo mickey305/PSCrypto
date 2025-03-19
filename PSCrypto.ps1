@@ -299,7 +299,7 @@ $C_ExportFullFileName = Join-Path $C_ExportDirectory $C_ExportFileName
 ##################################################
 function CreateRandomKey( $KeyBitSize ){
 	if( ($KeyBitSize % 8) -ne 0 ){
-		echo "Key size Error"
+		Write-Output "Key size Error"
 		return $null
 	}
 	# アセンブリロード
@@ -433,7 +433,7 @@ function RSAKeyContainerTest(){
 	# 自分の公開鍵
 	$PublicKeyPath = $C_PublicKeyFullPath
 	if( -not (Test-Path $PublicKeyPath)){
-		echo "Private key not found.: $PublicKeyPath"
+		Write-Output "Private key not found.: $PublicKeyPath"
 		exit
 	}
 
@@ -450,7 +450,7 @@ function RSAKeyContainerTest(){
 	# 自分の秘密鍵で秘密鍵復号
 	$DecryptoByte = RSADecryptoCSP $ContainerName $EncryptedByte
 
-	if( $DecryptoByte -eq $null ){
+	if( $null -eq $DecryptoByte ){
 		return $False
 	}
 	else{
@@ -599,7 +599,7 @@ function GetPrivateKey(){
 
 	}
 	else{
-		echo "Private key not found : $PrivateKeyFile"
+		Write-Output "Private key not found : $PrivateKeyFile"
 		exit
 	}
 
@@ -833,7 +833,7 @@ function Byte2Base64( $Byte ){
 # 指定場所から指定バイト数取り出す
 #####################################################################
 function GetByteDate($Byte, $Start, $Length ){
-	if( $Length -eq $null ){
+	if( $null -eq $Length ){
 		$DataSize = $Byte.Length
 		$Length = $DataSize - $Start
 	}
@@ -899,19 +899,19 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	if( $C_IsWindows ){
 		$Status = RSAKeyContainerTest
 		if( -not $Status ){
-			echo "Key Container not found."
+			Write-Output "Key Container not found."
 			exit
 		}
 	}
 
 	# 必須チェック
 	if( $PublicKeys.Count -eq 0 ){
-		echo "-PublicKeys not set."
+		Write-Output "-PublicKeys not set."
 		exit
 	}
 
 	if( $Path -eq [string]$null ){
-		echo "-Path not set."
+		Write-Output "-Path not set."
 		exit
 	}
 
@@ -922,8 +922,8 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	$PublicKeyXMLs = @()
 	foreach( $PublicKey in $PublicKeys ){
 		$PublicKey = ExistTestPublicKey $PublicKey
-		if( $PublicKey -eq $null ){
-			echo "Fail !! $PublicKey not found."
+		if( $null -eq $PublicKey ){
+			Write-Output "Fail !! $PublicKey not found."
 			exit
 		}
 
@@ -934,7 +934,7 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	# 公開鍵の数
 	$PublicKeyNumber = $PublicKeys.Length
 	if( $PublicKeyNumber -ge 0xff ){
-		echo "The number of public keys is greater than 255."
+		Write-Output "The number of public keys is greater than 255."
 		exit
 	}
 	$PublicKeyNumberByte = New-Object byte[] 1
@@ -942,7 +942,7 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 
 	# 対象ファイル存在確認
 	if( -not (Test-Path $Path )){
-		echo "Fail !! $Path not found."
+		Write-Output "Fail !! $Path not found."
 		exit
 	}
 
@@ -959,7 +959,7 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	# ファイル名長
 	$OriginalFileNameLength = $OriginalFileNameByte.Length
 	if( $OriginalFileNameLength -ge 0xff ){
-		echo "The size of the file names longer than 255 characters."
+		Write-Output "The size of the file names longer than 255 characters."
 		exit
 	}
 	$OriginalFileNameLengthByte = New-Object byte[] 1
@@ -1029,11 +1029,11 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 		[System.IO.File]::WriteAllBytes($Outfile ,$SignaturedEncriptoDataByte)
 	}
 	catch{
-		echo "Encrypto fail !! ： $Outfile"
+		Write-Output "Encrypto fail !! ： $Outfile"
 		exit
 	}
 
-	echo "Encrypto $Outfile"
+	Write-Output "Encrypto $Outfile"
 }
 
 #####################################################################
@@ -1045,14 +1045,14 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	if( $C_IsWindows ){
 		$Status = RSAKeyContainerTest
 		if( -not $Status ){
-			echo "Key Container not found."
+			Write-Output "Key Container not found."
 			exit
 		}
 	}
 
 	# 必須チェック
 	if( $Path -eq [string]$null ){
-		echo "-Path not set."
+		Write-Output "-Path not set."
 		exit
 	}
 
@@ -1063,8 +1063,8 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 		# 公開鍵の存在確認
 		$PublicKey = $PublicKeys[0]
 		$PublicKey = ExistTestPublicKey $PublicKey
-		if( $PublicKey -eq $null ){
-			echo "Fail !! $PublicKey not found."
+		if( $null -eq $PublicKey ){
+			Write-Output "Fail !! $PublicKey not found."
 			exit
 		}
 
@@ -1074,7 +1074,7 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 
 	# 対象ファイル存在確認
 	if( -not (Test-Path $Path )){
-		echo "Fail !! $Path not found."
+		Write-Output "Fail !! $Path not found."
 		exit
 	}
 
@@ -1110,7 +1110,7 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	}
 	else{
 		# PSCript の暗号データではない
-		echo "This file is not PSCript Data.: $Path"
+		Write-Output "This file is not PSCript Data.: $Path"
 		exit
 	}
 
@@ -1141,14 +1141,14 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 	$SignatureBlockByte = GetByteDate $SignaturedEncriptoDataBytes $IndexPoint $null
 
 	# 公開鍵で署名確認
-	if( $PublicKeyXML -ne $null ){
+	if( $null -ne $PublicKeyXML ){
 		$Result = RSAVerifySignature $PublicKeyXML $SignatureByte $SignatureBlockByte
 		if( $Result -ne $True ){
-			echo "Signature fail !!"
+			Write-Output "Signature fail !!"
 			exit
 		}
 		else{
-			echo "Signature OK"
+			Write-Output "Signature OK"
 		}
 	}
 
@@ -1173,7 +1173,7 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 		}
 
 		# 復号出来たら抜ける
-		if( $SessionKeyByte -ne $null ){
+		if( $null -ne $SessionKeyByte ){
 			break
 		}
 
@@ -1181,15 +1181,15 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 
 		# 復号できなかった
 		if( $i -ge $PublicKeyNumber){
-			echo "Session Key decrypto fail"
+			Write-Output "Session Key decrypto fail"
 			exit
 		}
 	}
 
 	# 暗号文をセッション鍵で復号
 	$PlainFileDataByte = AESDecrypto $SessionKeyByte $EncryptoFileDataByte
-	if( $PlainFileDataByte -eq $null ){
-		echo "Decrypto fail"
+	if( $null -eq $PlainFileDataByte ){
+		Write-Output "Decrypto fail"
 		exit
 	}
 
@@ -1210,11 +1210,11 @@ function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 		[System.IO.File]::WriteAllBytes($Outfile, $PlainFileDataByte)
 	}
 	catch{
-		echo "Decrypto fail !! ： $Outfile"
+		Write-Output "Decrypto fail !! ： $Outfile"
 		exit
 	}
 
-	echo "Decrypto $Outfile"
+	Write-Output "Decrypto $Outfile"
 }
 
 #####################################################################
@@ -1240,7 +1240,7 @@ function CreateKeyPeers($Outfile){
 
 		# 出力フォルダがなければ作成
 		if( -not (Test-Path $C_PrivateKeyLocation)){
-			md $C_PrivateKeyLocation
+			mkdir $C_PrivateKeyLocation
 		}
 
 		# 出力ファイル名
@@ -1260,13 +1260,13 @@ function CreateKeyPeers($Outfile){
 
 		# 出力フォルダがなければ作成
 		if( -not (Test-Path $C_PrivateKeyLocation)){
-			md $C_PrivateKeyLocation
+			mkdir $C_PrivateKeyLocation
 		}
 		elseif(Test-Path $PrivateKeyFile){
 			# すでに秘密鍵があるので、上書き確認
 			$Status = Read-Host -Prompt "Do you want to overwrite the private key ? [Y/N]"
 			if( $Status -ne "Y" ){
-				echo "Create key canceled."
+				Write-Output "Create key canceled."
 				exit
 			}
 		}
@@ -1274,14 +1274,14 @@ function CreateKeyPeers($Outfile){
 		# 秘密鍵出力
 		Set-Content -Path $PrivateKeyFile -Value $EncryptoPrivateKeyBase64 -Encoding UTF8
 
-		echo "Private key : $PrivateKeyFile"
+		Write-Output "Private key : $PrivateKeyFile"
 	}
 
 	# 出力ファイル名が未指定の場合はデフォルトの出力ファイル名にする
 	if( $Outfile -eq [string]$null ){
 		# 出力フォルダがなければ作成
 		if( -not (Test-Path $C_PulicKeyLocation)){
-			md $C_PulicKeyLocation
+			mkdir $C_PulicKeyLocation
 		}
 
 		# 出力ファイル名
@@ -1291,11 +1291,11 @@ function CreateKeyPeers($Outfile){
 	# 公開鍵出力
 	Set-Content -Path $Outfile -Value $PublicKey -Encoding UTF8
 
-	echo "Public key: $Outfile"
+	Write-Output "Public key: $Outfile"
 
 	if( $C_IsWindows ){
 		# エクスプローラーで開く
-		ii (Split-Path $Outfile -Parent)
+		Invoke-Item (Split-Path $Outfile -Parent)
 	}
 }
 
@@ -1335,7 +1335,7 @@ function InputPassword($Prompt){
 	$PlainConfirmPasswordString = SecureString2PlainString $ConfirmPasswordSecureString
 
 	if( $PlainPasswordString -ne $PlainConfirmPasswordString ){
-		echo "Unmatch !!"
+		Write-Output "Unmatch !!"
 		exit
 	}
 
@@ -1357,7 +1357,7 @@ function Export($ExportDirectory){
 	if( $C_IsWindows ){
 		$Status = RSAKeyContainerTest
 		if( -not $Status ){
-			echo "Key Container not found."
+			Write-Output "Key Container not found."
 			exit
 		}
 	}
@@ -1380,13 +1380,13 @@ function Export($ExportDirectory){
 
 	# エクスポートフォルダがなければ作成
 	if( -not (Test-Path $ExportDirectory)){
-		md $ExportDirectory
+		mkdir $ExportDirectory
 	}
 	elseif(Test-Path $ExportFullFileName){
 		# すでにエクスポートがあるので、上書き確認
 		$Status = Read-Host -Prompt "Do you want to overwrite the export private key ? [Y/N]"
 		if( $Status -ne "Y" ){
-			echo "Export canceled."
+			Write-Output "Export canceled."
 			exit
 		}
 	}
@@ -1394,10 +1394,10 @@ function Export($ExportDirectory){
 	# エクスポート出力
 	Set-Content -Path $ExportFullFileName -Value $EncryptoExportBase64 -Encoding UTF8
 
-	echo "Export File: $ExportFullFileName"
+	Write-Output "Export File: $ExportFullFileName"
 
 	# エクスプローラーで開く
-	ii $ExportDirectory
+	Invoke-Item $ExportDirectory
 
 }
 
@@ -1418,8 +1418,8 @@ function DecryptoPasswordData($Prompt, $EncryptoDataBytes){
 
 	# データーを AES 256 で復号化する
 	$PlainDatatByte = AESDecrypto $PasswordHashByte $EncryptoDataBytes
-	if( $PlainDatatByte -eq $null ){
-		echo "Password unmatch"
+	if( $null -eq $PlainDatatByte ){
+		Write-Output "Password unmatch"
 		exit
 	}
 
@@ -1439,7 +1439,7 @@ function DecryptoExportData($ExportDirectory){
 
 	# エクスポートファイル存在確認
 	if( -not (Test-Path $ExportFullFileName)){
-		echo "Fail !! $ExportFullFileName not found."
+		Write-Output "Fail !! $ExportFullFileName not found."
 		exit
 	}
 
@@ -1479,11 +1479,11 @@ if( $Debug ){
 # PS バージョンチェック
 $PSVertion = $PSVersionTable.PSVersion.Major
 if( $PSVertion -lt 5 ){
-	echo "Not support Windows PowerShell Less than 5."
+	Write-Output "Not support Windows PowerShell Less than 5."
 	exit
 }
 elseif($PSVertion -eq 6){
-	echo "Not support PowerShell Core 6."
+	Write-Output "Not support PowerShell Core 6."
 	exit
 }
 
@@ -1537,14 +1537,14 @@ Switch($Mode){
 			$Status = Read-Host -Prompt "Do you want to remove the private key ? [Y/N]"
 			if( $Status -eq "Y" ){
 				RSARemoveCSP $C_ContainerName
-				echo "Remove complete"
+				Write-Output "Remove complete"
 			}
 			else{
-				echo "Not removed"
+				Write-Output "Not removed"
 			}
 		}
 		else{
-			echo "Remove Key is Windows option."
+			Write-Output "Remove Key is Windows option."
 		}
 	}
 
@@ -1558,7 +1558,7 @@ Switch($Mode){
 			Export $Outfile
 		}
 		else{
-			echo "Export is Windows option."
+			Write-Output "Export is Windows option."
 		}
 	}
 
@@ -1576,19 +1576,19 @@ Switch($Mode){
 
 				# それでも無かった
 				if( -not (Test-Path $Path)){
-					echo "Export file not found."
+					Write-Output "Export file not found."
 					exit
 				}
 			}
 			$PlainExportByte = DecryptoExportData $Path
 			Import $PlainExportByte
 			if( -not (Test-Path $C_PulicKeyLocation)){
-				md $C_PulicKeyLocation
+				mkdir $C_PulicKeyLocation
 			}
-			echo "Import complete"
+			Write-Output "Import complete"
 		}
 		else{
-			echo "Import is Windows option."
+			Write-Output "Import is Windows option."
 		}
 	}
 
@@ -1600,21 +1600,21 @@ Switch($Mode){
 				$Path = $C_ExportFullFileName
 			}
 			$PlainExportByte = DecryptoExportData $Path
-			echo "Test OK"
+			Write-Output "Test OK"
 		}
 		else{
-			echo "Test is Windows option."
+			Write-Output "Test is Windows option."
 		}
 	}
 
 	# Test Private Key
 	$C_Mode_PrivateKeyTest {
 		if( $C_IsWindows ){
-			echo "Test Private Key is not Windows Option."
+			Write-Output "Test Private Key is not Windows Option."
 		}
 		else{
 			$PrivateKey = GetPrivateKey
-			echo "Test OK"
+			Write-Output "Test OK"
 		}
 	}
 
