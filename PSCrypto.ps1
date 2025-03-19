@@ -151,7 +151,7 @@ PS > .\PSCrypto.ps1 -Mode Test
 エクスポートしたキーコンテナのテスト
 
 エクスポートしたキーコンテナが復号できるかテストします
-スクリプトフォルダーのサブフォルダ(.\PSCrypto_\UserName)にある PSCryptoExport.dat をテストします
+スクリプトフォルダーのサブフォルダ(.\PSCrypto_Export\UserName)にある PSCryptoExport.dat をテストします
 
 キーコンテナ(Windows 用秘密鍵)をエクスポート(バックアップ)した際は、念のためにこのテストをしてください
 
