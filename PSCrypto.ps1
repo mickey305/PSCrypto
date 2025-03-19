@@ -1,7 +1,7 @@
 ﻿<#
 .SYNOPSIS
 概要
-公開鍵方式暗号を使用して、ファイルの暗号化/復号化をします
+公開鍵方式暗号を使用して、ファイルの暗号化/復号をします
 公開鍵方式なので、復号パスワードを相手に送る必要はありません
 
 Windows、Mac、Linux のマルチプラットフォームで使用できます
@@ -18,8 +18,8 @@ Windows、Mac、Linux のマルチプラットフォームで使用できます
     自分の秘密鍵で電子署名するので、改ざん/なりすまし検出が可能です
     Mac、Linux 環境では、秘密鍵のパスワードの入力が必要です
 
-・復号化(-Mode Decrypto)
-    自分の秘密鍵を使って復号化します
+・復号(-Mode Decrypto)
+    自分の秘密鍵を使って復号します
     ファイル送信者公開鍵を -PublicKeys で指定すると、電子署名を確認するので、なりすましや改ざん検出が可能です
     Mac、Linux 環境では、秘密鍵のパスワードの入力が必要です
 
@@ -98,34 +98,34 @@ PS > .\PSCrypto.ps1 C:\Data\SecretData.zip -PublicKeys UserA, UserB
 
 .EXAMPLE
 PS > .\PSCrypto.ps1 -Mode Decrypto -Path C:\Data\SecretData.enc
-暗号化されたファイルを復号化します
+暗号化されたファイルを復号します
 
-暗号化ファイルと同一フォルダーに元ファイル名で復号化されます
--Outfile を指定すると復号化ファイルの出力先フルパスが指定できます
+暗号化ファイルと同一フォルダーに元ファイル名で復号されます
+-Outfile を指定すると復号ファイルの出力先フルパスが指定できます
 
 Mac、Linux 環境では、秘密鍵のパスワード入力が必要です
 
 
 .EXAMPLE
 PS > .\PSCrypto.ps1 C:\Data\SecretData.enc
-省略形で暗号化されたファイルを復号化します
+省略形で暗号化されたファイルを復号します
 
 
 .EXAMPLE
 PS > .\PSCrypto.ps1 -Mode Decrypto -PublicKeys .\PublicKey\UserName_Publickey.xml -Path C:\Data\SecretData.enc
-暗号化されたファイルを復号化し、電子署名を検証します
+暗号化されたファイルを復号し、電子署名を検証します
 
 -PublicKeys に送信者の公開鍵を指定し、電子署名を確認します
 
-暗号化ファイルと同一フォルダーに元ファイル名で復号化されます
--Outfile を指定すると復号化されたファイルの出力先フルパスが指定できます
+暗号化ファイルと同一フォルダーに元ファイル名で復号されます
+-Outfile を指定すると復号されたファイルの出力先フルパスが指定できます
 
 Mac、Linux 環境では、秘密鍵のパスワード入力が必要です
 
 
 .EXAMPLE
 PS > .\PSCrypto.ps1 C:\Data\SecretData.enc UserName
-省略形で暗号化されたファイルを復号化し、電子署名を検証します
+省略形で暗号化されたファイルを復号し、電子署名を検証します
 既定のフォルダ(スクリプトフォルダーの PublicKeys)に公開鍵を置いている場合は、公開鍵の Path と _Publickey.xml を省略し、相手の UserName だけで公開鍵を指定することが出来ます
 
 
@@ -159,7 +159,7 @@ PS > .\PSCrypto.ps1 -Mode Test
     秘密鍵テスト: TestPrivateKey
     秘密鍵削除: RemoveKey
     暗号化: Encrypto
-    復号化: Decrypto
+    復号: Decrypto
     Export: Export
     Import: Import
     Test: Test
@@ -185,7 +185,7 @@ http://www.vwnet.jp/Windows/PowerShell/PublicKeyCrypto.htm
 
 
 ##########################################################
-# 暗号化、復号化、鍵生成、Export、Import
+# 暗号化、復号、鍵生成、Export、Import
 ##########################################################
 param(
 	[string]$Path,			# 入力ファイル名
@@ -252,6 +252,9 @@ $C_ScriptFullFileName = $MyInvocation.MyCommand.Path
 
 # スクリプトフォルダ
 $C_ScriptDirectory = $PSScriptRoot
+if ( $null -ne $env:PSC_KEYSTORE_PATH ) {
+	$C_ScriptDirectory = $env:PSC_KEYSTORE_PATH
+}
 
 # (旧)公開鍵出力場所
 $C_Old_PulicKeyLocation = Join-Path $C_ScriptDirectory "PublicKeys"
@@ -370,7 +373,7 @@ function AESEncrypto($KeyByte, $PlainByte){
 }
 
 ##################################################
-# AES 復号化
+# AES 復号
 ##################################################
 function AESDecrypto($ByteKey, $ByteString){
 	$KeySize = 256
@@ -403,11 +406,11 @@ function AESDecrypto($ByteKey, $ByteString){
 	# 鍵セット
 	$AES.Key = $ByteKey
 
-	# 復号化オブジェクト生成
+	# 復号オブジェクト生成
 	$Decryptor = $AES.CreateDecryptor()
 
 	try{
-		# 復号化
+		# 復号
 		$DecryptoByte = $Decryptor.TransformFinalBlock($ByteString, $IVSize, $ByteString.Length - $IVSize)
 	}
 	catch{
@@ -487,7 +490,7 @@ function RSAEncrypto($PublicKey, $PlainByte){
 }
 
 #####################################################################
-#  CSP キーコンテナに保存されている秘密鍵を使って文字列を復号化する
+#  CSP キーコンテナに保存されている秘密鍵を使って文字列を復号する
 #####################################################################
 function RSADecryptoCSP($ContainerName, $EncryptedByte){
 
@@ -517,7 +520,7 @@ function RSADecryptoCSP($ContainerName, $EncryptedByte){
 }
 
 #####################################################################
-#  秘密鍵を使って文字列を復号化する
+#  秘密鍵を使って文字列を復号する
 #####################################################################
 function RSADecryptoPrivateKey($PrivateKey, $EncryptedByte){
 	# アセンブリロード
@@ -1037,7 +1040,7 @@ function Encrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 }
 
 #####################################################################
-# 復号化処理
+# 復号処理
 #####################################################################
 function Decrypto( [string[]]$PublicKeys, $Path, $Outfile ){
 
@@ -1416,7 +1419,7 @@ function DecryptoPasswordData($Prompt, $EncryptoDataBytes){
 	# パスワードの SHA 256 ハッシュ値を求める
 	$PasswordHashByte = GetSHA256Hash $PlainPasswordByte
 
-	# データーを AES 256 で復号化する
+	# データーを AES 256 で復号する
 	$PlainDatatByte = AESDecrypto $PasswordHashByte $EncryptoDataBytes
 	if( $null -eq $PlainDatatByte ){
 		Write-Output "Password unmatch"
@@ -1428,7 +1431,7 @@ function DecryptoPasswordData($Prompt, $EncryptoDataBytes){
 
 
 #####################################################################
-# Export データー復号化
+# Export データー復号
 #####################################################################
 function DecryptoExportData($ExportDirectory){
 
@@ -1516,7 +1519,7 @@ if( $Mode -eq $null ){
 }
 
 Switch($Mode){
-	# 復号化
+	# 復号
 	$C_Mode_Decrypto {
 		Decrypto $PublicKeys $Path $Outfile
 	}
@@ -1627,7 +1630,7 @@ Switch($Mode){
 			$Parts = $FileName.Split(".")
 			$Ext = $Parts[$Parts.Count -1]
 
-			# 復号化
+			# 復号
 			if( $Ext -eq $C_Extension ){
 				Decrypto $PublicKeys $Path $Outfile
 			}

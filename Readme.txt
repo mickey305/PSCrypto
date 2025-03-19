@@ -6,7 +6,7 @@ Windows、Mac、Linux のマルチプラットフォームで使用できます
 
 ■ ファイル説明
 Readme.txt : このファイル
-PSCrypto.ps1 : 鍵ペア作成、暗号化、復号化、その他運用機能
+PSCrypto.ps1 : 鍵ペア作成、暗号化、復号、その他運用機能
 Design.txt : ざっくり内部仕様
 
 
@@ -48,8 +48,8 @@ PowerShell Core 7 以降(Mac、Linux、Windows)
 	自分の秘密鍵で電子署名するので、改ざん/なりすまし検出が可能です
 	Mac、Linux 環境では、秘密鍵のパスワードの入力が必要です
 
-・復号化(-Mode Decrypto)
-	自分の秘密鍵を使って復号化します
+・復号(-Mode Decrypto)
+	自分の秘密鍵を使って復号します
 	オプションで、ファイル送信者公開鍵を -PublicKeys で指定すると、電子署名を確認するので、なりすましや改ざん検出が可能です
 	Mac、Linux 環境では、秘密鍵のパスワードの入力が必要です
 
@@ -90,7 +90,7 @@ PowerShell Core 7 以降(Mac、Linux、Windows)
 		PS > .\PSCrypto.ps1 暗号化するファイル 受信者の公開鍵
 
 	復号
-		PS > .\PSCrypto.ps1 復号化するファイル [送信者の公開鍵]
+		PS > .\PSCrypto.ps1 復号するファイル [送信者の公開鍵]
 		(送信者の公開鍵を省略すると、署名チェックをしません)
 
 ■ 公開鍵の省略形
@@ -211,10 +211,10 @@ Windows 環境で鍵ペアを作成したのなら、-Mode RemoveKey を実行�
 
     PS >.\PSCrypto.ps1 -Mode Decrypto -Path C:\Data\SecretData.enc
 
-    暗号化されたファイルを復号化します
+    暗号化されたファイルを復号します
 
-    暗号化ファイルと同一フォルダーに元ファイル名で復号化されます
-    -Outfile を指定すると復号化ファイルの出力先フルパスが指定できます
+    暗号化ファイルと同一フォルダーに元ファイル名で復号されます
+    -Outfile を指定すると復号ファイルの出力先フルパスが指定できます
 
     Mac、Linux 環境では、秘密鍵のパスワード入力が必要です
 
@@ -225,7 +225,7 @@ Windows 環境で鍵ペアを作成したのなら、-Mode RemoveKey を実行�
 
     PS >.\PSCrypto.ps1 C:\Data\SecretData.enc
 
-    省略形で暗号化されたファイルを復号化します
+    省略形で暗号化されたファイルを復号します
 
 
 
@@ -234,12 +234,12 @@ Windows 環境で鍵ペアを作成したのなら、-Mode RemoveKey を実行�
 
     PS >.\PSCrypto.ps1 -Mode Decrypto -PublicKeys .\PublicKey\UserName_Publickey.xml -Path C:\Data\SecretData.enc
 
-    暗号化されたファイルを復号化し、電子署名を検証します
+    暗号化されたファイルを復号し、電子署名を検証します
 
     -PublicKeys に送信者の公開鍵を指定し、電子署名を確認します
 
-    暗号化ファイルと同一フォルダーに元ファイル名で復号化されます
-    -Outfile を指定すると復号化されたファイルの出力先フルパスが指定できます
+    暗号化ファイルと同一フォルダーに元ファイル名で復号されます
+    -Outfile を指定すると復号されたファイルの出力先フルパスが指定できます
 
     Mac、Linux 環境では、秘密鍵のパスワード入力が必要です
 
@@ -250,7 +250,7 @@ Windows 環境で鍵ペアを作成したのなら、-Mode RemoveKey を実行�
 
     PS >.\PSCrypto.ps1 C:\Data\SecretData.enc UserName
 
-    省略形で暗号化されたファイルを復号化し、電子署名を検証します
+    省略形で暗号化されたファイルを復号し、電子署名を検証します
     既定のフォルダ(スクリプトフォルダーの PublicKeys)に公開鍵を置いている場合は、公開鍵の Path と _Publickey.xml を省略
     し、相手の UserName だけで公開鍵を指定することが出来ます
 
